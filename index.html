@@ -6,252 +6,227 @@
   <title>Estimador de Orçamento</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --bg: #ffffff;
-      --bg2: #f8f9fa;
-      --bg3: #f1f3f5;
-      --text: #111827;
-      --text2: #6b7280;
-      --text3: #9ca3af;
-      --border: #e5e7eb;
-      --border2: #d1d5db;
-      --radius: 8px;
-      --radius-lg: 12px;
-      --green: #1D9E75; --green-bg: #E1F5EE; --green-text: #085041;
-      --yellow: #EF9F27; --yellow-bg: #FAEEDA; --yellow-text: #633806;
-      --red: #E24B4A; --red-bg: #FCEBEB; --red-text: #791F1F;
-      --blue-bg: #E6F1FB; --blue-text: #0C447C;
-      --purple-bg: #EEEDFE; --purple-text: #3C3489;
-      --gray-bg: #D3D1C7; --gray-text: #2C2C2A;
-      --orange-bg: #FAC775; --orange-text: #412402;
-      --pink-bg: #FBEAF0; --pink-text: #72243E;
-      --teal-bg: #E1F5EE; --teal-text: #085041;
+      --bg:#fff; --bg2:#f8f9fa; --bg3:#f1f3f5;
+      --text:#111827; --text2:#6b7280;
+      --border:#e5e7eb; --border2:#d1d5db;
+      --radius:8px; --radius-lg:12px;
+      --green:#1D9E75; --green-bg:#E1F5EE; --green-text:#085041;
+      --yellow:#EF9F27; --yellow-bg:#FAEEDA; --yellow-text:#633806;
+      --red:#E24B4A; --red-bg:#FCEBEB; --red-text:#791F1F;
+      --blue-bg:#E6F1FB; --blue-text:#0C447C;
+      --purple-bg:#EEEDFE; --purple-text:#3C3489;
+      --gray-bg:#D3D1C7; --gray-text:#2C2C2A;
+      --orange-bg:#FAC775; --orange-text:#412402;
+      --pink-bg:#FBEAF0; --pink-text:#72243E;
+      --teal-bg:#E1F5EE; --teal-text:#085041;
     }
-
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg2); color: var(--text); font-size: 14px; min-height: 100vh; }
-
-    header { background: var(--bg); border-bottom: 1px solid var(--border); padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 56px; position: sticky; top: 0; z-index: 10; }
-    .logo { font-size: 15px; font-weight: 600; letter-spacing: -.02em; }
-    .logo span { color: var(--text2); font-weight: 400; }
-    #conn-status { font-size: 12px; display: flex; align-items: center; gap: 6px; color: var(--text2); }
-    #conn-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border2); }
-    #conn-dot.ok { background: var(--green); }
-    #conn-dot.err { background: var(--red); }
-
-    .tabs { background: var(--bg); border-bottom: 1px solid var(--border); padding: 0 2rem; display: flex; gap: 0; }
-    .tab { padding: 14px 18px; background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; font-size: 14px; color: var(--text2); font-family: inherit; transition: .15s; }
-    .tab.active { color: var(--text); border-bottom-color: var(--text); font-weight: 500; }
-    .tab:hover:not(.active) { color: var(--text); }
-
-    main { max-width: 1200px; margin: 0 auto; padding: 2rem; }
-    .panel { display: none; } .panel.active { display: block; }
-
-    .sec-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
-    .sec-head h2 { font-size: 16px; font-weight: 600; }
-
-    .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 1.5rem; }
-    .metric { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; }
-    .metric-val { font-size: 22px; font-weight: 600; margin-bottom: 2px; }
-    .metric-lbl { font-size: 12px; color: var(--text2); }
-
-    .form-box { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; margin-bottom: 1.25rem; }
-    .form-box-title { font-size: 13px; font-weight: 500; color: var(--text2); margin-bottom: 1rem; }
-
-    .row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 1rem; }
-    .field { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 110px; }
-    .field label { font-size: 11px; color: var(--text2); font-weight: 500; text-transform: uppercase; letter-spacing: .04em; }
-    input, select, textarea { padding: 8px 10px; border: 1px solid var(--border2); border-radius: var(--radius); background: var(--bg); color: var(--text); font-size: 13px; font-family: inherit; width: 100%; transition: border-color .15s; }
-    input:focus, select:focus, textarea:focus { outline: none; border-color: #6b7280; }
-
-    .btn { padding: 8px 16px; border: 1px solid var(--border2); border-radius: var(--radius); background: var(--bg); color: var(--text); font-size: 13px; cursor: pointer; font-family: inherit; font-weight: 500; transition: background .15s; }
-    .btn:hover { background: var(--bg3); }
-    .btn.primary { background: var(--text); color: var(--bg); border-color: transparent; }
-    .btn.primary:hover { opacity: .85; }
-    .btn.sm { padding: 4px 10px; font-size: 12px; }
-    .btn.danger { color: var(--red-text); border-color: #f9a8a8; }
-    .btn.danger:hover { background: var(--red-bg); }
-
-    .filter-row { display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; }
-    .filter-row input { flex: 1; min-width: 200px; }
-    .filter-row select { width: auto; min-width: 150px; }
-
-    .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 500; white-space: nowrap; }
-    .age-badge { display: inline-block; padding: 2px 7px; border-radius: 20px; font-size: 11px; font-weight: 500; white-space: nowrap; }
-
-    .legend { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 1rem; font-size: 12px; color: var(--text2); align-items: center; }
-    .legend-item { display: flex; align-items: center; gap: 5px; }
-
-    .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--bg); }
-    table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    thead th { text-align: left; padding: 10px 12px; font-size: 11px; font-weight: 500; color: var(--text2); text-transform: uppercase; letter-spacing: .04em; border-bottom: 1px solid var(--border); white-space: nowrap; background: var(--bg2); }
-    tbody td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
-    tbody tr:last-child td { border-bottom: none; }
-    tbody tr:hover td { background: var(--bg2); }
-
-    .conf-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
-    .c-alta { background: var(--green); } .c-media { background: var(--yellow); } .c-baixa { background: var(--red); }
-    .racional { font-size: 11px; color: var(--text2); margin-top: 3px; font-style: italic; line-height: 1.4; }
-
-    .loading { display: flex; align-items: center; gap: 10px; padding: 2.5rem; color: var(--text2); font-size: 13px; justify-content: center; }
-    .spinner { width: 16px; height: 16px; border: 2px solid var(--border2); border-top-color: var(--text2); border-radius: 50%; animation: spin .7s linear infinite; flex-shrink: 0; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    .empty { padding: 3rem; text-align: center; color: var(--text2); font-size: 13px; }
-    .err-box { border: 1px dashed #f9a8a8; border-radius: var(--radius-lg); padding: 1.5rem; text-align: center; color: var(--red-text); font-size: 13px; background: var(--red-bg); }
-    .info-box { border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; background: var(--blue-bg); color: var(--blue-text); font-size: 13px; line-height: 1.6; margin-bottom: 1.25rem; }
-
-    .total-bar { display: flex; justify-content: flex-end; align-items: baseline; gap: 12px; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); }
-    .obs-box { background: var(--bg2); border-radius: var(--radius); padding: 1rem; margin-top: 1rem; font-size: 12px; color: var(--text2); line-height: 1.7; }
-
-    @media (max-width: 640px) {
-      main { padding: 1rem; }
-      .metrics { grid-template-columns: 1fr 1fr; }
-      header { padding: 0 1rem; }
-      .tabs { padding: 0 1rem; }
+    body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:var(--bg2); color:var(--text); font-size:14px; min-height:100vh; }
+    header { background:var(--bg); border-bottom:1px solid var(--border); padding:0 2rem; display:flex; align-items:center; justify-content:space-between; height:56px; position:sticky; top:0; z-index:10; }
+    .logo { font-size:15px; font-weight:600; letter-spacing:-.02em; }
+    .logo span { color:var(--text2); font-weight:400; }
+    #conn-status { font-size:12px; display:flex; align-items:center; gap:6px; color:var(--text2); }
+    #conn-dot { width:8px; height:8px; border-radius:50%; background:var(--border2); }
+    #conn-dot.ok { background:var(--green); } #conn-dot.err { background:var(--red); }
+    .tabs { background:var(--bg); border-bottom:1px solid var(--border); padding:0 2rem; display:flex; overflow-x:auto; }
+    .tab { padding:14px 16px; background:none; border:none; border-bottom:2px solid transparent; cursor:pointer; font-size:13px; color:var(--text2); font-family:inherit; transition:.15s; white-space:nowrap; }
+    .tab.active { color:var(--text); border-bottom-color:var(--text); font-weight:500; }
+    .tab:hover:not(.active) { color:var(--text); }
+    main { max-width:1200px; margin:0 auto; padding:2rem; }
+    .panel { display:none; } .panel.active { display:block; }
+    .sec-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.25rem; flex-wrap:wrap; gap:8px; }
+    .sec-head h2 { font-size:16px; font-weight:600; }
+    .metrics { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:1.5rem; }
+    .metric { background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-lg); padding:14px 16px; }
+    .metric-val { font-size:22px; font-weight:600; margin-bottom:2px; }
+    .metric-lbl { font-size:12px; color:var(--text2); }
+    .form-box { background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-lg); padding:1.25rem; margin-bottom:1.25rem; }
+    .form-box-title { font-size:13px; font-weight:500; color:var(--text2); margin-bottom:1rem; }
+    .row { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:1rem; }
+    .field { display:flex; flex-direction:column; gap:4px; flex:1; min-width:110px; position:relative; }
+    .field label { font-size:11px; color:var(--text2); font-weight:500; text-transform:uppercase; letter-spacing:.04em; }
+    input,select,textarea { padding:8px 10px; border:1px solid var(--border2); border-radius:var(--radius); background:var(--bg); color:var(--text); font-size:13px; font-family:inherit; width:100%; transition:border-color .15s; }
+    input:focus,select:focus,textarea:focus { outline:none; border-color:#6b7280; }
+    .ac-list { position:absolute; top:100%; left:0; right:0; background:var(--bg); border:1px solid var(--border2); border-radius:var(--radius); z-index:200; max-height:180px; overflow-y:auto; box-shadow:0 4px 12px rgba(0,0,0,.1); margin-top:2px; }
+    .ac-list div { padding:8px 10px; cursor:pointer; font-size:13px; }
+    .ac-list div:hover { background:var(--bg2); }
+    .btn { padding:8px 16px; border:1px solid var(--border2); border-radius:var(--radius); background:var(--bg); color:var(--text); font-size:13px; cursor:pointer; font-family:inherit; font-weight:500; transition:background .15s; white-space:nowrap; }
+    .btn:hover { background:var(--bg3); }
+    .btn.primary { background:var(--text); color:var(--bg); border-color:transparent; }
+    .btn.primary:hover { opacity:.85; }
+    .btn.sm { padding:4px 10px; font-size:12px; }
+    .btn.danger { color:var(--red-text); border-color:#f9a8a8; }
+    .btn.danger:hover { background:var(--red-bg); }
+    .filter-row { display:flex; gap:8px; margin-bottom:1rem; flex-wrap:wrap; }
+    .filter-row input { flex:1; min-width:200px; }
+    .filter-row select { width:auto; min-width:150px; }
+    .badge { display:inline-block; padding:2px 8px; border-radius:20px; font-size:11px; font-weight:500; white-space:nowrap; }
+    .age-badge { display:inline-block; padding:2px 7px; border-radius:20px; font-size:11px; font-weight:500; white-space:nowrap; }
+    .legend { display:flex; gap:14px; flex-wrap:wrap; margin-bottom:1rem; font-size:12px; color:var(--text2); align-items:center; }
+    .cat-group { margin-bottom:1.25rem; }
+    .cat-group-header { display:flex; align-items:center; gap:10px; padding:10px 14px; background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius) var(--radius) 0 0; cursor:pointer; user-select:none; }
+    .cat-group-header:hover { background:var(--bg3); }
+    .cat-group-body { border:1px solid var(--border); border-top:none; border-radius:0 0 var(--radius) var(--radius); overflow:hidden; }
+    .cat-toggle { font-size:11px; color:var(--text2); margin-left:auto; }
+    table { width:100%; border-collapse:collapse; font-size:13px; }
+    thead th { text-align:left; padding:10px 12px; font-size:11px; font-weight:500; color:var(--text2); text-transform:uppercase; letter-spacing:.04em; border-bottom:1px solid var(--border); white-space:nowrap; background:var(--bg2); }
+    tbody td { padding:10px 12px; border-bottom:1px solid var(--border); vertical-align:top; }
+    tbody tr:last-child td { border-bottom:none; }
+    tbody tr:hover td { background:var(--bg2); }
+    .table-wrap { overflow-x:auto; border:1px solid var(--border); border-radius:var(--radius-lg); background:var(--bg); }
+    .conf-dot { width:8px; height:8px; border-radius:50%; display:inline-block; flex-shrink:0; }
+    .c-alta{background:var(--green)} .c-media{background:var(--yellow)} .c-baixa{background:var(--red)}
+    .racional { font-size:11px; color:var(--text2); margin-top:3px; font-style:italic; line-height:1.4; }
+    .loading { display:flex; align-items:center; gap:10px; padding:2.5rem; color:var(--text2); font-size:13px; justify-content:center; }
+    .spinner { width:16px; height:16px; border:2px solid var(--border2); border-top-color:var(--text2); border-radius:50%; animation:spin .7s linear infinite; flex-shrink:0; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .empty { padding:3rem; text-align:center; color:var(--text2); font-size:13px; }
+    .err-box { border:1px dashed #f9a8a8; border-radius:var(--radius-lg); padding:1.5rem; text-align:center; color:var(--red-text); font-size:13px; background:var(--red-bg); }
+    .info-box { border:1px solid var(--border); border-radius:var(--radius-lg); padding:1.25rem; background:var(--blue-bg); color:var(--blue-text); font-size:13px; line-height:1.6; margin-bottom:1.25rem; }
+    .total-bar { display:flex; justify-content:flex-end; align-items:baseline; gap:12px; margin-top:1rem; padding-top:1rem; border-top:1px solid var(--border); }
+    .obs-box { background:var(--bg2); border-radius:var(--radius); padding:1rem; margin-top:1rem; font-size:12px; color:var(--text2); line-height:1.7; }
+    .tag-list { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+    .tag { display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:20px; font-size:12px; background:var(--bg2); border:1px solid var(--border); }
+    .tag button { background:none; border:none; cursor:pointer; color:var(--text2); font-size:15px; line-height:1; padding:0 0 0 2px; }
+    .tag button:hover { color:var(--red); }
+    @media print {
+      header,.tabs,.no-print{display:none!important}
+      body{background:#fff}
+      main{padding:0;max-width:100%}
+      .panel{display:none!important}
+      #p-estimar.printing{display:block!important}
+      .form-box{border:1px solid #ccc;margin-bottom:12px}
+      .btn{display:none!important}
+    }
+    @media(max-width:640px){
+      main{padding:1rem}
+      .metrics{grid-template-columns:1fr 1fr}
+      header{padding:0 1rem}
+      .tabs{padding:0 1rem}
     }
   </style>
 </head>
 <body>
-
 <header>
   <div class="logo">Estimador <span>/ Eventos & Cenografia</span></div>
   <div id="conn-status"><span id="conn-dot"></span><span id="conn-label">Conectando...</span></div>
 </header>
-
 <nav class="tabs">
   <button class="tab active" onclick="go('base')">Base de dados</button>
   <button class="tab" onclick="go('estimar')">Nova estimativa</button>
+  <button class="tab" onclick="go('historico')">Histórico</button>
   <button class="tab" onclick="go('config')">Configurações</button>
 </nav>
-
 <main>
-  <div id="p-base"    class="panel active"></div>
-  <div id="p-estimar" class="panel"></div>
-  <div id="p-config"  class="panel"></div>
+  <div id="p-base"      class="panel active"></div>
+  <div id="p-estimar"   class="panel"></div>
+  <div id="p-historico" class="panel"></div>
+  <div id="p-config"    class="panel"></div>
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
-// ─── CONFIGURAÇÃO ───────────────────────────────────────────────────────────
-const SUPABASE_URL = 'https://tfmkgnauccdiodvsroqr.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRmbWtnbmF1Y2NkaW9kdnNyb3FyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwNzIzNDAsImV4cCI6MjA5MDY0ODM0MH0.EwJJIu_nQEnS9y6N2C5kao9XDF6gT2R2ReIAYjd6LeU';
-// ────────────────────────────────────────────────────────────────────────────
+// ─── CONFIGURAÇÃO ─────────────────────────────────────────────────────────────
+const SUPABASE_URL = 'COLE_AQUI_SUA_URL';
+const SUPABASE_KEY = 'COLE_AQUI_SUA_CHAVE_ANONIMA';
+// ─────────────────────────────────────────────────────────────────────────────
 
-const CATS = ['Mobiliário','Tecnologia AV','Estrutura','Iluminação','Sinalização','Cenografia','Serviços','Outros'];
-
-let db = [], cfg = { markup: 20, rules: '' }, tab = 'base';
-let showForm = false, filterTxt = '', filterCat = '', filterAge = '';
+let db=[], cfg={markup:20,rules:''}, cats=[], suppliers=[], projects=[], history=[];
+let tab='base', showForm=false, filterTxt='', filterCat='', filterAge='', collapsedCats={};
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// ── Helpers ─────────────────────────────────────────────────────────────────
-function fmt(v) { return 'R$ ' + Math.round(v).toLocaleString('pt-BR'); }
-function today() { return new Date().toISOString().slice(0, 10); }
-function monthsAgo(iso) {
-  if (!iso) return 999;
-  const d = new Date(iso), now = new Date();
-  return (now.getFullYear() - d.getFullYear()) * 12 + (now.getMonth() - d.getMonth());
-}
-function fmtDate(iso) {
-  if (!iso) return '—';
-  const [y, m, d] = iso.split('-');
-  return `${d}/${m}/${y}`;
-}
-function ageBadge(iso) {
-  const m = monthsAgo(iso);
-  if (m <= 6)  return `<span class="age-badge" style="background:var(--green-bg);color:var(--green-text)">Recente</span>`;
-  if (m <= 18) return `<span class="age-badge" style="background:var(--yellow-bg);color:var(--yellow-text)">${m}m atrás</span>`;
-  return `<span class="age-badge" style="background:var(--red-bg);color:var(--red-text)">${Math.floor(m/12)}a ${m%12}m atrás</span>`;
-}
-function ageMatch(iso, filter) {
-  const m = monthsAgo(iso);
-  if (filter === 'fresh') return m <= 6;
-  if (filter === 'mid')   return m > 6 && m <= 18;
-  if (filter === 'old')   return m > 18;
-  return true;
-}
-const catClr = {
-  'Mobiliário':   'background:var(--blue-bg);color:var(--blue-text)',
-  'Tecnologia AV':'background:var(--purple-bg);color:var(--purple-text)',
-  'Estrutura':    'background:var(--gray-bg);color:var(--gray-text)',
-  'Iluminação':   'background:var(--yellow-bg);color:var(--yellow-text)',
-  'Sinalização':  'background:var(--orange-bg);color:var(--orange-text)',
-  'Cenografia':   'background:var(--pink-bg);color:var(--pink-text)',
-  'Serviços':     'background:var(--teal-bg);color:var(--teal-text)',
-  'Outros':       'background:var(--bg3);color:var(--text2)',
-};
-function cs(c) { return catClr[c] || catClr['Outros']; }
+function fmt(v){return 'R$ '+Math.round(v).toLocaleString('pt-BR')}
+function today(){return new Date().toISOString().slice(0,10)}
+function fmtDate(iso){if(!iso)return'—';const[y,m,d]=iso.split('-');return`${d}/${m}/${y}`}
+function fmtDatetime(iso){if(!iso)return'—';const d=new Date(iso);return d.toLocaleDateString('pt-BR')+' '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}
+function monthsAgo(iso){if(!iso)return 999;const d=new Date(iso),n=new Date();return(n.getFullYear()-d.getFullYear())*12+(n.getMonth()-d.getMonth())}
+function ageBadge(iso){const m=monthsAgo(iso);if(m<=6)return`<span class="age-badge" style="background:var(--green-bg);color:var(--green-text)">Recente</span>`;if(m<=18)return`<span class="age-badge" style="background:var(--yellow-bg);color:var(--yellow-text)">${m}m atrás</span>`;return`<span class="age-badge" style="background:var(--red-bg);color:var(--red-text)">${Math.floor(m/12)}a ${m%12}m atrás</span>`}
+function ageMatch(iso,f){const m=monthsAgo(iso);if(f==='fresh')return m<=6;if(f==='mid')return m>6&&m<=18;if(f==='old')return m>18;return true}
+const CLC={'Mobiliário':'background:var(--blue-bg);color:var(--blue-text)','Tecnologia AV':'background:var(--purple-bg);color:var(--purple-text)','Estrutura':'background:var(--gray-bg);color:var(--gray-text)','Iluminação':'background:var(--yellow-bg);color:var(--yellow-text)','Sinalização':'background:var(--orange-bg);color:var(--orange-text)','Cenografia':'background:var(--pink-bg);color:var(--pink-text)','Serviços':'background:var(--teal-bg);color:var(--teal-text)','Outros':'background:var(--bg3);color:var(--text2)'};
+function cs(c){return CLC[c]||'background:var(--bg3);color:var(--text2)'}
 
-// ── Supabase ─────────────────────────────────────────────────────────────────
-async function loadItems() {
-  const { data, error } = await sb.from('items').select('*').order('created_at', { ascending: false });
-  if (!error && data) db = data;
+async function loadAll(){
+  const[i,c,sp,pr,h,cf]=await Promise.all([
+    sb.from('items').select('*').order('cat').order('created_at',{ascending:false}),
+    sb.from('categories').select('*').order('name'),
+    sb.from('suppliers').select('*').order('name'),
+    sb.from('projects').select('*').order('name'),
+    sb.from('history').select('*').order('created_at',{ascending:false}),
+    sb.from('config').select('*').eq('id',1).single(),
+  ]);
+  if(i.data)db=i.data;
+  if(c.data)cats=c.data.map(r=>r.name);
+  if(sp.data)suppliers=sp.data.map(r=>r.name);
+  if(pr.data)projects=pr.data.map(r=>r.name);
+  if(h.data)history=h.data;
+  if(cf.data)cfg={markup:cf.data.markup,rules:cf.data.rules||''};
 }
-async function insertItem(item) {
-  const { data, error } = await sb.from('items').insert(item).select().single();
-  if (!error && data) db.unshift(data);
-  return !error;
-}
-async function removeItem(id) {
-  await sb.from('items').delete().eq('id', id);
-  db = db.filter(d => d.id !== id);
-}
-async function loadConfig() {
-  const { data } = await sb.from('config').select('*').eq('id', 1).single();
-  if (data) cfg = { markup: data.markup, rules: data.rules || '' };
-}
-async function saveConfigDb() {
-  await sb.from('config').upsert({ id: 1, markup: cfg.markup, rules: cfg.rules });
+async function insertItem(it){const{data,error}=await sb.from('items').insert(it).select().single();if(!error&&data)db.unshift(data);return!error}
+async function removeItem(id){await sb.from('items').delete().eq('id',id);db=db.filter(d=>d.id!==id)}
+async function saveConfigDb(){await sb.from('config').upsert({id:1,markup:cfg.markup,rules:cfg.rules})}
+async function addCategory(n){await sb.from('categories').insert({name:n});cats.push(n)}
+async function removeCategory(n){await sb.from('categories').delete().eq('name',n);cats=cats.filter(c=>c!==n)}
+async function addSupplier(n){await sb.from('suppliers').insert({name:n});suppliers.push(n)}
+async function removeSupplier(n){await sb.from('suppliers').delete().eq('name',n);suppliers=suppliers.filter(s=>s!==n)}
+async function addProject(n){await sb.from('projects').insert({name:n});projects.push(n)}
+async function removeProject(n){await sb.from('projects').delete().eq('name',n);projects=projects.filter(p=>p!==n)}
+async function saveHistory(e){const{data}=await sb.from('history').insert(e).select().single();if(data)history.unshift(data)}
+
+function go(t){
+  tab=t;
+  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('active',['base','estimar','historico','config'][i]===t));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('p-'+t).classList.add('active');
+  if(t==='base')rBase();if(t==='estimar')rEstimar();if(t==='historico')rHistorico();if(t==='config')rConfig();
 }
 
-// ── Tab navigation ────────────────────────────────────────────────────────────
-function go(t) {
-  tab = t;
-  document.querySelectorAll('.tab').forEach((b, i) => b.classList.toggle('active', ['base','estimar','config'][i] === t));
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.getElementById('p-' + t).classList.add('active');
-  if (t === 'base')    rBase();
-  if (t === 'estimar') rEstimar();
-  if (t === 'config')  rConfig();
+function setupAC(inpId,lstId,opts){
+  const inp=document.getElementById(inpId),lst=document.getElementById(lstId);
+  if(!inp||!lst)return;
+  const show=v=>{const f=v?opts.filter(o=>o.toLowerCase().includes(v.toLowerCase())):opts;lst.innerHTML=f.map(o=>`<div onmousedown="pickAC('${inpId}','${lstId}','${o.replace(/'/g,"\\'")}')"> ${o}</div>`).join('');lst.style.display=f.length?'block':'none'};
+  inp.addEventListener('input',()=>show(inp.value.trim()));
+  inp.addEventListener('focus',()=>show(inp.value.trim()));
+  inp.addEventListener('blur',()=>setTimeout(()=>lst.style.display='none',150));
 }
+function pickAC(inpId,lstId,val){document.getElementById(inpId).value=val;document.getElementById(lstId).style.display='none'}
 
-// ── Base de dados ─────────────────────────────────────────────────────────────
-function rBase() {
-  const fd = db.filter(d =>
-    (!filterCat || d.cat === filterCat) &&
-    (!filterTxt || [d.item, d.descricao, d.sup, d.cat].some(s => s && s.toLowerCase().includes(filterTxt.toLowerCase()))) &&
-    (!filterAge || ageMatch(d.date, filterAge))
+// BASE DE DADOS
+function rBase(){
+  const fd=db.filter(d=>
+    (!filterCat||d.cat===filterCat)&&
+    (!filterTxt||[d.item,d.descricao,d.sup,d.cat,d.projeto].some(s=>s&&s.toLowerCase().includes(filterTxt.toLowerCase())))&&
+    (!filterAge||ageMatch(d.date,filterAge))
   );
-  const cats = [...new Set(db.map(d => d.cat))];
-  const stale = db.filter(d => monthsAgo(d.date) > 12).length;
-  const p = document.getElementById('p-base');
-
-  p.innerHTML = `
+  const activeCats=[...new Set(db.map(d=>d.cat))];
+  const stale=db.filter(d=>monthsAgo(d.date)>12).length;
+  const allCats=[...new Set(fd.map(d=>d.cat))].sort();
+  const p=document.getElementById('p-base');
+  p.innerHTML=`
     <div class="sec-head">
       <h2>Itens de projetos anteriores</h2>
-      <button class="btn" onclick="toggleForm()">+ Adicionar item</button>
+      <button class="btn no-print" onclick="toggleForm()">+ Adicionar item</button>
     </div>
     <div id="af-wrap"></div>
     <div class="metrics">
       <div class="metric"><div class="metric-val">${db.length}</div><div class="metric-lbl">Itens na base</div></div>
-      <div class="metric"><div class="metric-val">${cats.length}</div><div class="metric-lbl">Categorias</div></div>
-      <div class="metric" style="${stale > 0 ? 'border-color:#f9a8a8' : ''}">
-        <div class="metric-val" style="${stale > 0 ? 'color:var(--red-text)' : ''}">${stale}</div>
+      <div class="metric"><div class="metric-val">${activeCats.length}</div><div class="metric-lbl">Categorias</div></div>
+      <div class="metric" style="${stale>0?'border-color:#f9a8a8':''}">
+        <div class="metric-val" style="${stale>0?'color:var(--red-text)':''}">${stale}</div>
         <div class="metric-lbl">Cotações com +1 ano</div>
       </div>
     </div>
     <div class="legend">
       <span style="font-weight:500;font-size:11px">Antiguidade:</span>
-      <span class="legend-item"><span class="age-badge" style="background:var(--green-bg);color:var(--green-text)">Recente</span> até 6 meses</span>
-      <span class="legend-item"><span class="age-badge" style="background:var(--yellow-bg);color:var(--yellow-text)">Xm atrás</span> 7–18 meses</span>
-      <span class="legend-item"><span class="age-badge" style="background:var(--red-bg);color:var(--red-text)">Xa atrás</span> +18 meses</span>
+      <span style="display:flex;align-items:center;gap:5px"><span class="age-badge" style="background:var(--green-bg);color:var(--green-text)">Recente</span> até 6m</span>
+      <span style="display:flex;align-items:center;gap:5px"><span class="age-badge" style="background:var(--yellow-bg);color:var(--yellow-text)">Xm atrás</span> 7–18m</span>
+      <span style="display:flex;align-items:center;gap:5px"><span class="age-badge" style="background:var(--red-bg);color:var(--red-text)">Xa atrás</span> +18m</span>
     </div>
-    <div class="filter-row">
-      <input placeholder="Buscar item, descritivo, fornecedor..." value="${filterTxt}" oninput="filterTxt=this.value;rBase()">
+    <div class="filter-row no-print">
+      <input placeholder="Buscar item, descritivo, fornecedor, projeto..." value="${filterTxt}" oninput="filterTxt=this.value;rBase()">
       <select onchange="filterCat=this.value;rBase()">
         <option value="">Todas as categorias</option>
-        ${CATS.map(c => `<option value="${c}"${filterCat===c?' selected':''}>${c}</option>`).join('')}
+        ${activeCats.sort().map(c=>`<option value="${c}"${filterCat===c?' selected':''}>${c}</option>`).join('')}
       </select>
       <select onchange="filterAge=this.value;rBase()">
         <option value="">Qualquer data</option>
@@ -260,182 +235,199 @@ function rBase() {
         <option value="old"${filterAge==='old'?' selected':''}>+18 meses</option>
       </select>
     </div>
-    ${fd.length ? `
-    <div class="table-wrap">
-      <table>
-        <thead><tr>
-          <th>Categoria</th><th>Item</th><th>Descritivo</th>
-          <th style="text-align:right">Qtd</th>
-          <th style="text-align:right">Unitário</th>
-          <th style="text-align:right">Total</th>
-          <th>Fornecedor</th>
-          <th>Data cotação</th>
-          <th></th>
-        </tr></thead>
-        <tbody>
-          ${fd.map(d => `<tr>
-            <td><span class="badge" style="${cs(d.cat)}">${d.cat}</span></td>
+    ${fd.length?allCats.map(cat=>{
+      const items=fd.filter(d=>d.cat===cat);
+      const open=!collapsedCats[cat];
+      return`<div class="cat-group">
+        <div class="cat-group-header" onclick="toggleCat('${cat}')">
+          <span class="badge" style="${cs(cat)}">${cat}</span>
+          <span style="font-size:13px;font-weight:500;margin-left:4px">${items.length} item${items.length!==1?'s':''}</span>
+          <span class="cat-toggle">${open?'▲':'▼'}</span>
+        </div>
+        ${open?`<div class="cat-group-body"><table>
+          <thead><tr><th>Item</th><th>Descritivo</th><th>Projeto</th><th style="text-align:right">Qtd</th><th style="text-align:right">Unit.</th><th style="text-align:right">Total</th><th>Fornecedor</th><th>Data</th><th class="no-print"></th></tr></thead>
+          <tbody>${items.map(d=>`<tr>
             <td style="font-weight:500;white-space:nowrap">${d.item}</td>
-            <td style="color:var(--text2);font-size:12px;max-width:200px">${d.descricao || '—'}</td>
+            <td style="color:var(--text2);font-size:12px;max-width:160px">${d.descricao||'—'}</td>
+            <td style="color:var(--text2);font-size:12px;white-space:nowrap">${d.projeto||'—'}</td>
             <td style="text-align:right">${d.qty}</td>
             <td style="text-align:right">${fmt(d.unit)}</td>
             <td style="text-align:right;font-weight:500">${fmt(d.total)}</td>
             <td style="color:var(--text2);font-size:12px;white-space:nowrap">${d.sup}</td>
-            <td style="white-space:nowrap">
-              <div style="font-size:12px;color:var(--text2);margin-bottom:3px">${fmtDate(d.date)}</div>
-              ${ageBadge(d.date)}
-            </td>
-            <td><button class="btn sm danger" onclick="doDelete(${d.id})">×</button></td>
-          </tr>`).join('')}
-        </tbody>
-      </table>
-    </div>
-    ${fd.length < db.length ? `<div style="font-size:12px;color:var(--text2);margin-top:8px;text-align:right">${fd.length} de ${db.length} itens</div>` : ''}
-    ` : `<div class="empty">Nenhum item encontrado.</div>`}
+            <td style="white-space:nowrap"><div style="font-size:12px;color:var(--text2);margin-bottom:3px">${fmtDate(d.date)}</div>${ageBadge(d.date)}</td>
+            <td class="no-print"><button class="btn sm danger" onclick="doDelete(${d.id})">×</button></td>
+          </tr>`).join('')}</tbody>
+        </table></div>`:''}
+      </div>`;
+    }).join(''):`<div class="empty">Nenhum item encontrado.</div>`}
   `;
-  if (showForm) renderForm();
+  if(showForm)renderForm();
 }
 
-function toggleForm() {
-  showForm = !showForm;
-  showForm ? renderForm() : (document.getElementById('af-wrap').innerHTML = '');
-}
+function toggleCat(cat){collapsedCats[cat]=!collapsedCats[cat];rBase()}
+function toggleForm(){showForm=!showForm;showForm?renderForm():(document.getElementById('af-wrap').innerHTML='')}
 
-function renderForm() {
-  const w = document.getElementById('af-wrap');
-  if (!w) return;
-  w.innerHTML = `
+function renderForm(){
+  const w=document.getElementById('af-wrap');if(!w)return;
+  const catOpts=(cats.length?cats:['Mobiliário','Tecnologia AV','Estrutura','Iluminação','Sinalização','Cenografia','Serviços','Outros']);
+  w.innerHTML=`
     <div class="form-box" style="margin-bottom:1.25rem">
       <div class="form-box-title">Novo item</div>
       <div class="row">
         <div class="field" style="max-width:160px"><label>Categoria</label>
-          <select id="af-cat">${CATS.map(c => `<option>${c}</option>`).join('')}</select>
+          <select id="af-cat">${catOpts.map(c=>`<option>${c}</option>`).join('')}</select>
         </div>
         <div class="field" style="flex:2"><label>Item</label><input id="af-item" placeholder="Ex: Poltrona executiva"></div>
-        <div class="field" style="flex:3"><label>Descritivo</label><input id="af-descricao" placeholder="Especificações: dimensão, cor, material..."></div>
+        <div class="field" style="flex:3"><label>Descritivo</label><input id="af-descricao" placeholder="Dimensão, cor, material..."></div>
       </div>
       <div class="row">
         <div class="field" style="max-width:90px"><label>Quantidade</label><input id="af-qty" type="number" min="1" value="1" oninput="calcT()"></div>
         <div class="field" style="max-width:130px"><label>Unitário R$</label><input id="af-unit" type="number" placeholder="0" oninput="calcT()"></div>
         <div class="field" style="max-width:130px"><label>Total R$</label><input id="af-tot" type="number" placeholder="auto" style="color:var(--text2)"></div>
-        <div class="field"><label>Fornecedor</label><input id="af-sup" placeholder="Nome do fornecedor"></div>
+        <div class="field" style="max-width:110px"><label>Duração (dias)</label><input id="af-dur" type="number" min="1" placeholder="—"></div>
         <div class="field" style="max-width:160px"><label>Data da cotação</label><input id="af-date" type="date" value="${today()}"></div>
       </div>
-      <div style="display:flex;gap:8px;justify-content:flex-end">
+      <div class="row">
+        <div class="field"><label>Fornecedor</label>
+          <input id="af-sup" placeholder="Nome do fornecedor" autocomplete="off">
+          <div class="ac-list" id="ac-sup" style="display:none"></div>
+        </div>
+        <div class="field"><label>Projeto</label>
+          <input id="af-proj" placeholder="Nome do projeto" autocomplete="off">
+          <div class="ac-list" id="ac-proj" style="display:none"></div>
+        </div>
+      </div>
+      <div class="row" style="margin-bottom:0">
+        <div class="field"><label>Observações <span style="font-weight:400;text-transform:none;font-size:10px">(opcional)</span></label>
+          <input id="af-obs" placeholder="Informações adicionais">
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:1rem">
         <button class="btn" onclick="toggleForm()">Cancelar</button>
         <button class="btn primary" onclick="doAdd()">Salvar item</button>
       </div>
     </div>
   `;
+  setTimeout(()=>{setupAC('af-sup','ac-sup',suppliers);setupAC('af-proj','ac-proj',projects)},50);
 }
 
-function calcT() {
-  const q = parseFloat(document.getElementById('af-qty')?.value) || 0;
-  const u = parseFloat(document.getElementById('af-unit')?.value) || 0;
-  const t = document.getElementById('af-tot');
-  if (t && q && u) t.value = Math.round(q * u);
+function calcT(){
+  const q=parseFloat(document.getElementById('af-qty')?.value)||0;
+  const u=parseFloat(document.getElementById('af-unit')?.value)||0;
+  const t=document.getElementById('af-tot');if(t&&q&&u)t.value=Math.round(q*u);
 }
 
-async function doAdd() {
-  const item = document.getElementById('af-item')?.value.trim();
-  if (!item) { alert('Informe o nome do item'); return; }
-  const qty  = parseFloat(document.getElementById('af-qty').value) || 1;
-  const unit = parseFloat(document.getElementById('af-unit').value) || 0;
-  const btn  = document.querySelector('#af-wrap .btn.primary');
-  btn.disabled = true; btn.textContent = 'Salvando...';
-  const ok = await insertItem({
-    cat:   document.getElementById('af-cat').value,
-    item,
-    descricao:  document.getElementById('af-descricao').value.trim(),
-    qty, unit,
-    total: parseFloat(document.getElementById('af-tot').value) || (qty * unit),
-    sup:   document.getElementById('af-sup').value.trim() || '—',
-    date:  document.getElementById('af-date').value || today(),
+async function doAdd(){
+  const item=document.getElementById('af-item')?.value.trim();
+  if(!item){alert('Informe o nome do item');return}
+  const qty=parseFloat(document.getElementById('af-qty').value)||1;
+  const unit=parseFloat(document.getElementById('af-unit').value)||0;
+  const btn=document.querySelector('#af-wrap .btn.primary');
+  btn.disabled=true;btn.textContent='Salvando...';
+  await insertItem({
+    cat:document.getElementById('af-cat').value,item,
+    descricao:document.getElementById('af-descricao').value.trim(),
+    qty,unit,total:parseFloat(document.getElementById('af-tot').value)||(qty*unit),
+    sup:document.getElementById('af-sup').value.trim()||'—',
+    projeto:document.getElementById('af-proj').value.trim()||null,
+    duracao:parseFloat(document.getElementById('af-dur').value)||null,
+    observacoes:document.getElementById('af-obs').value.trim()||null,
+    date:document.getElementById('af-date').value||today(),
   });
-  showForm = false;
-  rBase();
+  showForm=false;rBase();
 }
 
-async function doDelete(id) {
-  if (!confirm('Remover este item da base?')) return;
-  await removeItem(id);
-  rBase();
+async function doDelete(id){
+  if(!confirm('Remover este item da base?'))return;
+  await removeItem(id);rBase();
 }
 
-// ── Nova estimativa ───────────────────────────────────────────────────────────
-function rEstimar() {
-  document.getElementById('p-estimar').innerHTML = `
+// NOVA ESTIMATIVA
+function rEstimar(){
+  document.getElementById('p-estimar').innerHTML=`
     <div class="sec-head"><h2>Nova estimativa de orçamento</h2></div>
     <div class="form-box">
-      <div class="form-box-title">Descreva os itens que você precisa para o projeto</div>
+      <div class="form-box-title">Dados do projeto</div>
+      <div class="row">
+        <div class="field"><label>Nome do projeto / cliente</label><input id="est-nome" placeholder="Ex: Evento Corporativo — Cliente XYZ"></div>
+        <div class="field" style="max-width:120px"><label>Duração (dias)</label><input id="est-dur" type="number" min="1" placeholder="1"></div>
+        <div class="field" style="max-width:130px"><label>Markup (%)</label><input id="est-mkp" type="number" min="0" value="${cfg.markup}"></div>
+      </div>
+      <div class="row" style="margin-bottom:0">
+        <div class="field"><label>Observações <span style="font-weight:400;text-transform:none;font-size:10px">(opcional)</span></label>
+          <input id="est-obs" placeholder="Informações relevantes para a estimativa">
+        </div>
+      </div>
+    </div>
+    <div class="form-box">
+      <div class="form-box-title">Descreva os itens necessários</div>
       <textarea id="est-in" rows="7" placeholder="Ex:&#10;35 poltronas executivas&#10;1 painel de LED 3x3m&#10;5 totens de sinalização&#10;1 sistema de som para 300 pessoas&#10;10 mesas redondas" style="margin-bottom:1rem;resize:vertical"></textarea>
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
         <span style="font-size:12px;color:var(--text2)">A IA cruza com a base e pondera a data de cada cotação ao gerar os valores.</span>
-        <button class="btn primary" onclick="gerarEstimativa()">Gerar estimativa com IA →</button>
+        <button class="btn primary no-print" onclick="gerarEstimativa()">Gerar estimativa com IA →</button>
       </div>
     </div>
     <div id="est-res"></div>
   `;
 }
 
-async function gerarEstimativa() {
-  const input = document.getElementById('est-in')?.value.trim();
-  if (!input) { alert('Descreva os itens necessários.'); return; }
-  if (!db.length) { alert('Adicione itens à base de dados primeiro.'); return; }
-
-  const res = document.getElementById('est-res');
-  res.innerHTML = `<div class="loading"><div class="spinner"></div> Analisando base de dados e gerando estimativa com IA...</div>`;
-
-  const dbCtx = db.map(d => {
-    const m = monthsAgo(d.date);
-    const age = m <= 6 ? 'cotação recente' : m <= 18 ? `cotação de ${m} meses atrás` : `cotação desatualizada (${Math.floor(m/12)}a ${m%12}m atrás)`;
-    return `[${d.cat}] ${d.item} | ${d.descricao} | Qtd ref: ${d.qty} | Unitário: R$${d.unit} | Fornecedor: ${d.sup} | Data: ${fmtDate(d.date)} (${age})`;
+async function gerarEstimativa(){
+  const input=document.getElementById('est-in')?.value.trim();
+  const nome=document.getElementById('est-nome')?.value.trim()||'Sem nome';
+  const dur=document.getElementById('est-dur')?.value||'não informado';
+  const mkp=parseFloat(document.getElementById('est-mkp')?.value)||cfg.markup;
+  const obs=document.getElementById('est-obs')?.value.trim()||'';
+  if(!input){alert('Descreva os itens necessários.');return}
+  if(!db.length){alert('Adicione itens à base de dados primeiro.');return}
+  const res=document.getElementById('est-res');
+  res.innerHTML=`<div class="loading"><div class="spinner"></div> Analisando base de dados e gerando estimativa com IA...</div>`;
+  const dbCtx=db.map(d=>{
+    const m=monthsAgo(d.date);
+    const age=m<=6?'cotação recente':m<=18?`cotação de ${m} meses atrás`:`cotação desatualizada (${Math.floor(m/12)}a ${m%12}m atrás)`;
+    const durInfo=d.duracao?` | Duração ref: ${d.duracao} dia(s)`:'';
+    return`[${d.cat}] ${d.item} | ${d.descricao||''} | Qtd ref: ${d.qty}${durInfo} | Unitário: R$${d.unit} | Fornecedor: ${d.sup} | Data: ${fmtDate(d.date)} (${age})`;
   }).join('\n');
-
-  const sys = `Você é assistente especializado em orçamentos para produção de eventos e cenografia no Brasil.
+  const sys=`Você é assistente especializado em orçamentos para produção de eventos e cenografia no Brasil.
 Data de hoje: ${today()}
+Projeto: ${nome}
+Duração do evento: ${dur} dia(s)
+Markup solicitado: ${mkp}%
+${obs?`Observações do projeto: ${obs}`:''}
 
-BASE DE DADOS (itens de projetos anteriores com data de cotação):
+BASE DE DADOS:
 ${dbCtx}
 
 REGRAS:
-- Markup padrão: ${cfg.markup}%
-- Cotações com mais de 18 meses devem ser tratadas com cautela — indique no racional e aplique reajuste estimado de IGPM (aproximadamente 5–8% ao ano)
-- Cotações recentes (até 6 meses) têm alta confiabilidade
-${cfg.rules ? `- Regras adicionais:\n${cfg.rules}` : ''}
+- Use markup de ${mkp}% sobre o valor base
+- Cotações com mais de 18 meses: aplique reajuste de IGPM (~5–8%/ano) e mencione no racional
+- Se a duração for informada, ajuste quantidades de itens por dia quando relevante
+${cfg.rules?`- Regras adicionais:\n${cfg.rules}`:''}
 
 INSTRUÇÕES:
-Para cada item solicitado:
-1. Busque o item idêntico ou mais similar na base
-2. Se não houver correspondência exata, faça racional por m², quantidade ou categoria similar
-3. Considere a data da cotação — itens antigos devem ter racional explícito sobre desatualização
-4. "unitario_base" = valor SEM markup; "unitario_final" = COM markup
-5. Confiança: "alta" = item recente e idêntico; "media" = similar ou ajuste de qty; "baixa" = estimativa por analogia ou cotação desatualizada
-6. "racional" = 1 frase curta explicando o valor e mencionando a data se relevante
+Para cada item: busque o mais similar na base, faça racional por m² ou qty se não houver exato.
+"unitario_base"=sem markup, "unitario_final"=com markup de ${mkp}%
+Confiança: "alta"=item recente idêntico; "media"=similar/ajuste; "baixa"=analogia/desatualizado
+"racional"=1 frase curta
 
-Retorne SOMENTE JSON válido, sem markdown:
-{"itens":[{"solicitado":"texto","item_base":"nome na base","fornecedor":"fornecedor","quantidade":N,"unitario_base":N,"unitario_final":N,"total":N,"confianca":"alta|media|baixa","racional":"frase"}],"total_geral":N,"observacoes":"texto"}`;
-
-  try {
-    const r = await fetch('/api/estimate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1500, system: sys, messages: [{ role: 'user', content: input }] })
-    });
-    const data = await r.json();
-    const txt = data.content.map(b => b.type === 'text' ? b.text : '').join('');
-    const m = txt.replace(/```json|```/g, '').trim().match(/\{[\s\S]*\}/);
-    if (!m) throw new Error('no json');
-    renderResult(JSON.parse(m[0]));
-  } catch (e) {
-    res.innerHTML = `<div class="err-box">Não foi possível gerar a estimativa. Verifique a configuração da API e tente novamente.</div>`;
+Retorne SOMENTE JSON válido sem markdown:
+{"itens":[{"solicitado":"texto","item_base":"nome","fornecedor":"nome","quantidade":N,"unitario_base":N,"unitario_final":N,"total":N,"confianca":"alta|media|baixa","racional":"frase"}],"total_geral":N,"observacoes":"texto"}`;
+  try{
+    const r=await fetch('/api/estimate',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2000,system:sys,messages:[{role:'user',content:input}]})});
+    const data=await r.json();
+    const txt=data.content.map(b=>b.type==='text'?b.text:'').join('');
+    const m=txt.replace(/```json|```/g,'').trim().match(/\{[\s\S]*\}/);
+    if(!m)throw new Error('no json');
+    renderResult(JSON.parse(m[0]),nome,dur,mkp,obs);
+  }catch(e){
+    res.innerHTML=`<div class="err-box">Não foi possível gerar a estimativa. Verifique a configuração da API e tente novamente.</div>`;
   }
 }
 
-function renderResult(r) {
-  const cl = { alta: 'c-alta', media: 'c-media', baixa: 'c-baixa' };
-  const lbl = { alta: 'Alta', media: 'Média', baixa: 'Baixa' };
-  const rows = r.itens.map(it => `<tr>
+function renderResult(r,nome,dur,mkp,obs){
+  const cl={alta:'c-alta',media:'c-media',baixa:'c-baixa'};
+  const lbl={alta:'Alta',media:'Média',baixa:'Baixa'};
+  const rows=r.itens.map(it=>`<tr>
     <td><div style="font-weight:500">${it.solicitado}</div><div class="racional">${it.racional}</div></td>
     <td style="font-size:12px;color:var(--text2);white-space:nowrap">${it.item_base}</td>
     <td style="font-size:12px;color:var(--text2);white-space:nowrap">${it.fornecedor}</td>
@@ -447,9 +439,20 @@ function renderResult(r) {
       <span class="conf-dot ${cl[it.confianca]||'c-baixa'}"></span>${lbl[it.confianca]||it.confianca}
     </span></td>
   </tr>`).join('');
-
-  document.getElementById('est-res').innerHTML = `
-    <div class="table-wrap">
+  document.getElementById('est-res').innerHTML=`
+    <div class="form-box" id="result-box">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--border)">
+        <div>
+          <div style="font-size:16px;font-weight:600">${nome}</div>
+          <div style="font-size:12px;color:var(--text2);margin-top:3px">Duração: ${dur} dia(s) · Markup: ${mkp}% · Gerado em ${new Date().toLocaleDateString('pt-BR')}</div>
+          ${obs?`<div style="font-size:12px;color:var(--text2);margin-top:2px">${obs}</div>`:''}
+        </div>
+        <div style="display:flex;gap:8px" class="no-print">
+          <button class="btn" onclick="exportPDF()">Exportar PDF</button>
+          <button class="btn primary" id="btn-save-hist" onclick="salvarHistorico(this,${JSON.stringify(r).replace(/"/g,'&quot;')},'${nome.replace(/'/g,"\\'")}','${dur}',${mkp},'${obs.replace(/'/g,"\\'")}')">Salvar no histórico</button>
+        </div>
+      </div>
+      <div style="overflow-x:auto">
       <table>
         <thead><tr>
           <th>Item solicitado / racional</th><th>Referência na base</th><th>Fornecedor</th>
@@ -461,44 +464,124 @@ function renderResult(r) {
         </tr></thead>
         <tbody>${rows}</tbody>
       </table>
+      </div>
+      <div class="total-bar">
+        <span style="font-size:13px;color:var(--text2)">Total estimado (markup ${mkp}%)</span>
+        <span style="font-size:24px;font-weight:700">${fmt(r.total_geral)}</span>
+      </div>
+      ${r.observacoes?`<div class="obs-box"><strong>Observações da IA:</strong> ${r.observacoes}</div>`:''}
+      <div style="margin-top:1rem;font-size:11px;color:var(--text2)">Valores são estimativas com base em projetos anteriores. Use como referência antes de consultar fornecedores.</div>
     </div>
-    <div class="total-bar">
-      <span style="font-size:13px;color:var(--text2)">Total estimado (markup ${cfg.markup}%)</span>
-      <span style="font-size:24px;font-weight:700">${fmt(r.total_geral)}</span>
-    </div>
-    ${r.observacoes ? `<div class="obs-box"><strong>Observações:</strong> ${r.observacoes}</div>` : ''}
-    <div style="margin-top:1rem;font-size:11px;color:var(--text2)">Valores são estimativas com base em projetos anteriores. Use como referência antes de consultar fornecedores.</div>
   `;
 }
 
-// ── Configurações ─────────────────────────────────────────────────────────────
-function rConfig() {
-  document.getElementById('p-config').innerHTML = `
-    <div class="sec-head"><h2>Configurações e regras</h2></div>
+async function salvarHistorico(btn,r,nome,dur,mkp,obs){
+  btn.disabled=true;btn.textContent='Salvando...';
+  await saveHistory({nome,duracao:dur,markup:mkp,observacoes:obs,total:r.total_geral,itens_json:JSON.stringify(r.itens),obs_ia:r.observacoes||''});
+  btn.textContent='Salvo ✓';setTimeout(()=>{btn.disabled=false;btn.textContent='Salvar no histórico'},3000);
+}
+
+function exportPDF(){
+  const pe=document.getElementById('p-estimar');
+  pe.classList.add('printing');
+  window.print();
+  pe.classList.remove('printing');
+}
+
+// HISTÓRICO
+function rHistorico(){
+  const p=document.getElementById('p-historico');
+  if(!history.length){p.innerHTML=`<div class="sec-head"><h2>Histórico de estimativas</h2></div><div class="empty">Nenhuma estimativa salva ainda. Gere uma estimativa e clique em "Salvar no histórico".</div>`;return}
+  p.innerHTML=`
+    <div class="sec-head"><h2>Histórico de estimativas</h2></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>Projeto / cliente</th>
+          <th style="text-align:center">Duração</th>
+          <th style="text-align:center">Markup</th>
+          <th style="text-align:right">Total estimado</th>
+          <th>Observações</th>
+          <th>Data</th>
+          <th></th>
+        </tr></thead>
+        <tbody>${history.map(h=>`<tr>
+          <td style="font-weight:500">${h.nome||'—'}</td>
+          <td style="text-align:center">${h.duracao||'—'} ${h.duracao?'dia(s)':''}</td>
+          <td style="text-align:center">${h.markup||0}%</td>
+          <td style="text-align:right;font-weight:500">${fmt(h.total||0)}</td>
+          <td style="color:var(--text2);font-size:12px;max-width:200px">${h.observacoes||'—'}</td>
+          <td style="font-size:12px;color:var(--text2);white-space:nowrap">${fmtDatetime(h.created_at)}</td>
+          <td><button class="btn sm" onclick="verHistorico(${h.id})">Ver</button></td>
+        </tr>`).join('')}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+function verHistorico(id){
+  const h=history.find(x=>x.id===id);if(!h)return;
+  const itens=JSON.parse(h.itens_json||'[]');
+  go('estimar');
+  setTimeout(()=>{
+    document.getElementById('est-nome').value=h.nome||'';
+    document.getElementById('est-dur').value=h.duracao||'';
+    document.getElementById('est-mkp').value=h.markup||cfg.markup;
+    document.getElementById('est-obs').value=h.observacoes||'';
+    renderResult({itens,total_geral:h.total,observacoes:h.obs_ia},h.nome||'—',h.duracao||'—',h.markup||cfg.markup,h.observacoes||'');
+  },100);
+}
+
+// CONFIGURAÇÕES
+function rConfig(){
+  const p=document.getElementById('p-config');
+  p.innerHTML=`
+    <div class="sec-head"><h2>Configurações</h2></div>
     <div class="form-box">
-      <div class="form-box-title">Markup de precificação</div>
+      <div class="form-box-title">Categorias</div>
+      <div style="display:flex;gap:8px;margin-bottom:10px">
+        <input id="new-cat" placeholder="Nova categoria..." style="max-width:280px" onkeydown="if(event.key==='Enter')doAddCat()">
+        <button class="btn" onclick="doAddCat()">Adicionar</button>
+      </div>
+      <div class="tag-list">
+        ${cats.map(c=>`<span class="tag"><span class="badge" style="${cs(c)}">${c}</span><button onclick="doRemoveCat('${c.replace(/'/g,"\\'")}')">×</button></span>`).join('')}
+      </div>
+      ${!cats.length?`<div style="font-size:12px;color:var(--text2);margin-top:8px">Nenhuma categoria cadastrada — o app usa as categorias padrão.</div>`:''}
+    </div>
+    <div class="form-box">
+      <div class="form-box-title">Fornecedores</div>
+      <div style="display:flex;gap:8px;margin-bottom:10px">
+        <input id="new-sup" placeholder="Nome do fornecedor..." style="max-width:280px" onkeydown="if(event.key==='Enter')doAddSup()">
+        <button class="btn" onclick="doAddSup()">Adicionar</button>
+      </div>
+      <div class="tag-list">
+        ${suppliers.map(s=>`<span class="tag">${s}<button onclick="doRemoveSup('${s.replace(/'/g,"\\'")}')">×</button></span>`).join('')}
+      </div>
+      ${!suppliers.length?`<div style="font-size:12px;color:var(--text2);margin-top:8px">Nenhum fornecedor cadastrado.</div>`:''}
+    </div>
+    <div class="form-box">
+      <div class="form-box-title">Projetos</div>
+      <div style="display:flex;gap:8px;margin-bottom:10px">
+        <input id="new-proj" placeholder="Nome do projeto..." style="max-width:280px" onkeydown="if(event.key==='Enter')doAddProj()">
+        <button class="btn" onclick="doAddProj()">Adicionar</button>
+      </div>
+      <div class="tag-list">
+        ${projects.map(pr=>`<span class="tag">${pr}<button onclick="doRemoveProj('${pr.replace(/'/g,"\\'")}')">×</button></span>`).join('')}
+      </div>
+      ${!projects.length?`<div style="font-size:12px;color:var(--text2);margin-top:8px">Nenhum projeto cadastrado.</div>`:''}
+    </div>
+    <div class="form-box">
+      <div class="form-box-title">Markup padrão</div>
       <div class="row" style="align-items:flex-end">
-        <div class="field" style="max-width:150px">
-          <label>Markup global (%)</label>
+        <div class="field" style="max-width:150px"><label>Markup global (%)</label>
           <input id="cfg-mkp" type="number" min="0" max="300" value="${cfg.markup}">
         </div>
-        <div style="font-size:12px;color:var(--text2);padding-bottom:10px;flex:1">
-          Percentual aplicado sobre o valor de referência da base ao gerar estimativas.
-        </div>
+        <div style="font-size:12px;color:var(--text2);padding-bottom:10px;flex:1">Valor sugerido ao abrir a estimativa. Pode ser alterado a cada uso.</div>
       </div>
     </div>
     <div class="form-box">
       <div class="form-box-title">Regras de estimativa</div>
-      <textarea id="cfg-rules" rows="8" placeholder="Escreva as regras que a IA deve seguir ao gerar estimativas. Exemplos:&#10;- Iluminação deve incluir 20% de reserva técnica&#10;- Eventos em outras cidades: adicionar 15% de logística&#10;- Para eventos acima de 2 dias, aplicar desconto de 10% em mobiliário&#10;- Sempre sugerir 2 técnicos de AV para eventos com painel de LED" style="resize:vertical">${cfg.rules}</textarea>
-    </div>
-    <div class="form-box">
-      <div class="form-box-title">Critério de antiguidade das cotações</div>
-      <div style="font-size:13px;color:var(--text2);line-height:1.8">
-        A IA considera automaticamente a data de cada cotação ao gerar estimativas.<br>
-        <span style="display:inline-flex;align-items:center;gap:6px;margin-top:4px"><span class="age-badge" style="background:var(--green-bg);color:var(--green-text)">Recente</span> até 6 meses — alta confiabilidade</span><br>
-        <span style="display:inline-flex;align-items:center;gap:6px;margin-top:4px"><span class="age-badge" style="background:var(--yellow-bg);color:var(--yellow-text)">Xm atrás</span> 7–18 meses — confiabilidade média</span><br>
-        <span style="display:inline-flex;align-items:center;gap:6px;margin-top:4px"><span class="age-badge" style="background:var(--red-bg);color:var(--red-text)">Xa atrás</span> +18 meses — atenção, considerar reajuste</span>
-      </div>
+      <textarea id="cfg-rules" rows="8" placeholder="Regras para a IA seguir. Ex:&#10;- Iluminação: incluir 20% de reserva técnica&#10;- Eventos fora da cidade: +15% logística&#10;- Eventos acima de 2 dias: -10% em mobiliário" style="resize:vertical">${cfg.rules}</textarea>
     </div>
     <div style="display:flex;align-items:center;justify-content:flex-end;gap:12px">
       <span id="cfg-ok" style="font-size:12px;color:var(--green);display:none">Configurações salvas.</span>
@@ -507,43 +590,36 @@ function rConfig() {
   `;
 }
 
-async function saveCfgForm() {
-  cfg.markup = parseFloat(document.getElementById('cfg-mkp').value) || 20;
-  cfg.rules  = document.getElementById('cfg-rules').value.trim();
-  const btn = document.querySelector('#p-config .btn.primary');
-  btn.disabled = true; btn.textContent = 'Salvando...';
+async function doAddCat(){const v=document.getElementById('new-cat').value.trim();if(!v)return;await addCategory(v);document.getElementById('new-cat').value='';rConfig()}
+async function doRemoveCat(n){if(!confirm(`Remover categoria "${n}"?`))return;await removeCategory(n);rConfig()}
+async function doAddSup(){const v=document.getElementById('new-sup').value.trim();if(!v)return;await addSupplier(v);document.getElementById('new-sup').value='';rConfig()}
+async function doRemoveSup(n){await removeSupplier(n);rConfig()}
+async function doAddProj(){const v=document.getElementById('new-proj').value.trim();if(!v)return;await addProject(v);document.getElementById('new-proj').value='';rConfig()}
+async function doRemoveProj(n){await removeProject(n);rConfig()}
+
+async function saveCfgForm(){
+  cfg.markup=parseFloat(document.getElementById('cfg-mkp').value)||20;
+  cfg.rules=document.getElementById('cfg-rules').value.trim();
+  const btn=document.querySelector('#p-config .btn.primary');
+  btn.disabled=true;btn.textContent='Salvando...';
   await saveConfigDb();
-  btn.disabled = false; btn.textContent = 'Salvar configurações';
-  const ok = document.getElementById('cfg-ok');
-  ok.style.display = 'inline'; setTimeout(() => ok.style.display = 'none', 2500);
+  btn.disabled=false;btn.textContent='Salvar configurações';
+  const ok=document.getElementById('cfg-ok');
+  ok.style.display='inline';setTimeout(()=>ok.style.display='none',2500);
 }
 
-// ── Boot ──────────────────────────────────────────────────────────────────────
-async function boot() {
-  const dot   = document.getElementById('conn-dot');
-  const label = document.getElementById('conn-label');
-
-  if (SUPABASE_URL === 'COLE_AQUI_SUA_URL') {
-    dot.className = 'err'; label.textContent = 'Supabase não configurado';
-    document.getElementById('p-base').innerHTML = `
-      <div class="info-box">
-        <strong>Configure o Supabase para começar.</strong><br>
-        Abra o arquivo <code>index.html</code>, localize as linhas <code>SUPABASE_URL</code> e <code>SUPABASE_KEY</code> no início do script e substitua pelos valores do seu projeto. Veja o README.md para o passo a passo completo.
-      </div>`;
+// BOOT
+async function boot(){
+  const dot=document.getElementById('conn-dot'),label=document.getElementById('conn-label');
+  if(SUPABASE_URL==='COLE_AQUI_SUA_URL'){
+    dot.className='err';label.textContent='Supabase não configurado';
+    document.getElementById('p-base').innerHTML=`<div class="info-box"><strong>Configure o Supabase para começar.</strong><br>Abra o <code>index.html</code> e substitua SUPABASE_URL e SUPABASE_KEY pelos valores do seu projeto.</div>`;
     return;
   }
-
-  try {
-    await loadConfig();
-    await loadItems();
-    dot.className = 'ok'; label.textContent = 'Conectado';
-  } catch (e) {
-    dot.className = 'err'; label.textContent = 'Erro de conexão';
-  }
-
-  rBase(); rEstimar(); rConfig();
+  try{await loadAll();dot.className='ok';label.textContent='Conectado'}
+  catch(e){dot.className='err';label.textContent='Erro de conexão'}
+  rBase();rEstimar();rHistorico();rConfig();
 }
-
 boot();
 </script>
 </body>
