@@ -148,7 +148,7 @@ function cs(c){return CLC[c]||'background:var(--bg3);color:var(--text2)'}
 
 async function loadAll(){
   const[i,c,sp,pr,h,cf]=await Promise.all([
-    sb.from('items').select('*').order('cat').order('created_at',{ascending:false}),
+    sb.from('items').select('*').order('cat').order('item',{ascending:true}),
     sb.from('categories').select('*').order('name'),
     sb.from('suppliers').select('*').order('name'),
     sb.from('projects').select('*').order('name'),
