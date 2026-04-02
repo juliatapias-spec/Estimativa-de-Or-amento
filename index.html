@@ -163,7 +163,8 @@ async function loadAll(){
   if(cf.data)cfg={markup:cf.data.markup,rules:cf.data.rules||''};
 }
 async function insertItem(it){const{data,error}=await sb.from('items').insert(it).select().single();if(!error&&data)db.unshift(data);return!error}
-async function removeItem(id){await sb.from('items').delete().eq('id',id);db=db.filter(d=>d.id!==id)}
+async function updateItem(id,it){const{data,error}=await sb.from("items").update(it).eq("id",id).select().single();if(!error&&data){const i=db.findIndex(d=>d.id===id);if(i>=0)db[i]={...db[i],...data}}return!error}
+async function removeItem(id){await sb.from("items").delete().eq("id",id);db=db.filter(d=>d.id!==id)}
 async function saveConfigDb(){await sb.from('config').upsert({id:1,markup:cfg.markup,rules:cfg.rules})}
 async function addCategory(n){await sb.from('categories').insert({name:n});cats.push(n)}
 async function removeCategory(n){await sb.from('categories').delete().eq('name',n);cats=cats.filter(c=>c!==n)}
@@ -255,7 +256,7 @@ function rBase(){
             <td style="text-align:right;font-weight:500">${fmt(d.total)}</td>
             <td style="color:var(--text2);font-size:12px;white-space:nowrap">${d.sup}</td>
             <td style="white-space:nowrap"><div style="font-size:12px;color:var(--text2);margin-bottom:3px">${fmtDate(d.date)}</div>${ageBadge(d.date)}</td>
-            <td class="no-print"><button class="btn sm danger" onclick="doDelete(${d.id})">×</button></td>
+            <td class="no-print" style="white-space:nowrap;display:flex;gap:4px;padding:10px 8px"><button class="btn sm" onclick="doEdit(${d.id})" style="color:var(--text2)">✏</button><button class="btn sm danger" onclick="doDelete(${d.id})">×</button></td>
           </tr>`).join('')}</tbody>
         </table></div>`:''}
       </div>`;
@@ -340,6 +341,76 @@ async function doAdd(){
 async function doDelete(id){
   if(!confirm('Remover este item da base?'))return;
   await removeItem(id);rBase();
+}
+
+function doEdit(id){
+  const d=db.find(x=>x.id===id);if(!d)return;
+  const catOpts=(cats.length?cats:['Mobiliário','Tecnologia AV','Estrutura','Iluminação','Sinalização','Cenografia','Serviços','Outros']);
+  showForm=false;
+  document.getElementById('af-wrap').innerHTML=`
+    <div class="form-box" style="margin-bottom:1.25rem;border-color:var(--border2)">
+      <div class="form-box-title">Editar item</div>
+      <div class="row">
+        <div class="field" style="max-width:160px"><label>Categoria</label>
+          <select id="ef-cat">${catOpts.map(c=>`<option${c===d.cat?' selected':''}>${c}</option>`).join('')}</select>
+        </div>
+        <div class="field" style="flex:2"><label>Item</label><input id="ef-item" value="${(d.item||'').replace(/"/g,'&quot;')}"></div>
+        <div class="field" style="flex:3"><label>Descritivo</label><input id="ef-descricao" value="${(d.descricao||'').replace(/"/g,'&quot;')}"></div>
+      </div>
+      <div class="row">
+        <div class="field" style="max-width:90px"><label>Quantidade</label><input id="ef-qty" type="number" min="1" value="${d.qty||1}" oninput="calcTE()"></div>
+        <div class="field" style="max-width:130px"><label>Unitário R$</label><input id="ef-unit" type="number" value="${d.unit||0}" oninput="calcTE()"></div>
+        <div class="field" style="max-width:130px"><label>Total R$</label><input id="ef-tot" type="number" value="${d.total||0}" style="color:var(--text2)"></div>
+        <div class="field" style="max-width:110px"><label>Duração (dias)</label><input id="ef-dur" type="number" min="1" value="${d.duracao||''}"></div>
+        <div class="field" style="max-width:160px"><label>Data da cotação</label><input id="ef-date" type="date" value="${d.date||today()}"></div>
+      </div>
+      <div class="row">
+        <div class="field"><label>Fornecedor</label>
+          <input id="ef-sup" value="${(d.sup||'').replace(/"/g,'&quot;')}" autocomplete="off">
+          <div class="ac-list" id="ac-esup" style="display:none"></div>
+        </div>
+        <div class="field"><label>Projeto</label>
+          <input id="ef-proj" value="${(d.projeto||'').replace(/"/g,'&quot;')}" autocomplete="off">
+          <div class="ac-list" id="ac-eproj" style="display:none"></div>
+        </div>
+      </div>
+      <div class="row" style="margin-bottom:0">
+        <div class="field"><label>Observações</label><input id="ef-obs" value="${(d.observacoes||'').replace(/"/g,'&quot;')}"></div>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:1rem">
+        <button class="btn" onclick="document.getElementById('af-wrap').innerHTML=''">Cancelar</button>
+        <button class="btn primary" onclick="doSaveEdit(${id})">Salvar alterações</button>
+      </div>
+    </div>
+  `;
+  setTimeout(()=>{setupAC('ef-sup','ac-esup',suppliers);setupAC('ef-proj','ac-eproj',projects)},50);
+  document.getElementById('af-wrap').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function calcTE(){
+  const q=parseFloat(document.getElementById('ef-qty')?.value)||0;
+  const u=parseFloat(document.getElementById('ef-unit')?.value)||0;
+  const t=document.getElementById('ef-tot');if(t&&q&&u)t.value=Math.round(q*u);
+}
+
+async function doSaveEdit(id){
+  const item=document.getElementById('ef-item')?.value.trim();
+  if(!item){alert('Informe o nome do item');return}
+  const qty=parseFloat(document.getElementById('ef-qty').value)||1;
+  const unit=parseFloat(document.getElementById('ef-unit').value)||0;
+  const btn=document.querySelector('#af-wrap .btn.primary');
+  btn.disabled=true;btn.textContent='Salvando...';
+  await updateItem(id,{
+    cat:document.getElementById('ef-cat').value,item,
+    descricao:document.getElementById('ef-descricao').value.trim(),
+    qty,unit,total:parseFloat(document.getElementById('ef-tot').value)||(qty*unit),
+    sup:document.getElementById('ef-sup').value.trim()||'—',
+    projeto:document.getElementById('ef-proj').value.trim()||null,
+    duracao:parseFloat(document.getElementById('ef-dur').value)||null,
+    observacoes:document.getElementById('ef-obs').value.trim()||null,
+    date:document.getElementById('ef-date').value||today(),
+  });
+  document.getElementById('af-wrap').innerHTML='';rBase();
 }
 
 // NOVA ESTIMATIVA
