@@ -6,32 +6,23 @@ module.exports = async function (req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) return res.status(500).json({ error: 'GEMINI_API_KEY not configured' });
-
-  const { system, messages } = req.body;
-  const userText = messages?.[0]?.content || '';
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) return res.status(500).json({ error: 'ANTHROPIC_API_KEY not configured' });
 
   try {
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          systemInstruction: { parts: [{ text: system }] },
-          contents: [{ role: 'user', parts: [{ text: userText }] }],
-          generationConfig: { temperature: 0.2, maxOutputTokens: 1500 },
-        }),
-      }
-    );
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify(req.body),
+    });
 
     const data = await response.json();
-    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-
-    // Retorna no mesmo formato esperado pelo front-end
-    res.status(200).json({ content: [{ type: 'text', text }] });
+    res.status(response.status).json(data);
   } catch (err) {
-    res.status(500).json({ error: 'Erro ao contatar a API do Gemini', detail: err.message });
+    res.status(500).json({ error: 'Erro ao contatar a API da Anthropic', detail: err.message });
   }
 };
